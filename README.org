@@ -1,0 +1,4 @@
+* Optimize Expression to C
+
+  This is [[https://www.wolfram.com/mathematica/][Mathematica]] function which takes an expression and spits out 
+  optimized C code to evaluate such expression.
