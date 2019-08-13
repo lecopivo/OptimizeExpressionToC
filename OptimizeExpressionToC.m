@@ -27,13 +27,52 @@ OptimizeExpressionToC[expr_] :=
 		
 		output = 
 		Flatten@
-		MapIndexed[ "out("<>StringJoin@Riffle[ToString/@(#2-1),","]<>") = " <> ToString@CForm@#1 <>";\n" &,
-		mainExpr, {ArrayDepth[mainExpr]}];
+		       MapIndexed[ "out("<>StringJoin@Riffle[ToString/@(#2-1),","]<>") = " <> ToString@CForm@#1 <>";\n" &,
+					 mainExpr, {ArrayDepth[mainExpr]}];
 		
 		Join[defs,output]
 	];
 
 End[]
+
+
+ExtractTags[string_String] :=
+	Module[ {regex, extractTag},
+		regex = RegularExpression["\\n([^\\n]*)// (\\[|</?)([^\\]\\n]*)(\\]|>)[^\\n]*\\n"];
+		
+		extractTag[bounds_] := Module[{substring, indentation, tagType, tag},
+					      substring = StringTake[string, bounds];
+					      {{indentation, tagType, tag}} = 
+					      StringCases[substring, regex -> {"$1", "$2", "$3"}];
+					      Association["indentation" -> indentation,
+							  "tagType" -> tagType, 
+							  "tag" -> tag , "start" -> bounds[[1]] + 1, 
+							  "end" -> bounds[[2]]]
+				       ];
+		
+		extractTag[#] & /@ StringPosition[string, regex]
+	];
+
+ClearTagText[string_String, tag_String] :=
+	Module[{tags, startTag, endTag},
+	       tags = ExtractTags[string];
+	       startTag = FirstCase[tags, x_ /; x[["tag"]] == tag  && x[["tagType"]] == "<"];
+	       endTag = FirstCase[tags, x_ /; x[["tag"]] == tag  && x[["tagType"]] == "</"];
+	       
+	       StringTake[string, {1, startTag[["end"]]}] <> 
+			 StringTake[string, {endTag[["start"]], StringLength[string]}]
+	]
+
+AppendToTag[string_String,  tag_String, linesToAppend_List] := 
+	Module[{tags, startTag, indent},
+	       tags = ExtractTags[string];
+	       indent = startTag[["indentation"]];
+	       startTag = FirstCase[tags, x_ /; x[["tag"]] == tag  && x[["tagType"]] == "<"];
+	       
+	       StringTake[string, {1, startTag[["end"]]}] <> 
+			 StringRiffle[ linesToAppend, {indent, "\n" <> indent, "\n"}] <>
+			 StringTake[ string, {startTag[["end"]] + 1, StringLength[string]}]
+	];
 
 EndPackage[]
 
