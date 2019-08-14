@@ -22,15 +22,15 @@ OptimizeExpressionToC[expr_] :=
 			       ToString@CForm@optimizedExpr[[1, 2, i, 1]]  <>
 			       " = " <>
 			       ToString@CForm@optimizedExpr[[1, 2, i, 2]] <>
-     			       ";\n",
+     			       ";",
     		       {i, 1, n}];
 		
 		output = 
 		Flatten@
-		       MapIndexed[ "out("<>StringJoin@Riffle[ToString/@(#2-1),","]<>") = " <> ToString@CForm@#1 <>";\n" &,
+		       MapIndexed[ "out("<>StringJoin@Riffle[ToString/@(#2-1),","]<>") = " <> ToString@CForm@#1 <>";" &,
 					 mainExpr, {ArrayDepth[mainExpr]}];
 		
-		Join[defs,output]
+		StringReplace[Join[defs,output], "Compile_$" -> "tmp"]
 	];
 
 End[]
@@ -53,6 +53,8 @@ ExtractTags[string_String] :=
 		extractTag[#] & /@ StringPosition[string, regex]
 	];
 
+TagExistQ[string_String, tag_String] := AnyTrue[ExtractTags[string], #[["tag"]]==tag &];
+
 ClearTagText[string_String, tag_String] :=
 	Module[{tags, startTag, endTag},
 	       tags = ExtractTags[string];
@@ -66,13 +68,17 @@ ClearTagText[string_String, tag_String] :=
 AppendToTag[string_String,  tag_String, linesToAppend_List] := 
 	Module[{tags, startTag, indent},
 	       tags = ExtractTags[string];
-	       indent = startTag[["indentation"]];
 	       startTag = FirstCase[tags, x_ /; x[["tag"]] == tag  && x[["tagType"]] == "<"];
+	       indent = startTag[["indentation"]];
 	       
 	       StringTake[string, {1, startTag[["end"]]}] <> 
 			 StringRiffle[ linesToAppend, {indent, "\n" <> indent, "\n"}] <>
 			 StringTake[ string, {startTag[["end"]] + 1, StringLength[string]}]
 	];
+
+AppendToTag[string_String,  tag_String, stringToAppend_String] :=
+	AppendToTag[string, tag, StringSplit[stringToAppend,"\n"]];
+
 
 EndPackage[]
 

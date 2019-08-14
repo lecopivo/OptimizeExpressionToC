@@ -3,4 +3,8 @@
   This is a [[https://www.wolfram.com/mathematica/][Mathematica]] function which takes an expression and spits out an
   optimized C code to evaluate this expression.
 
-* TODO Explain how to use it
+* Examples
+
+   You can find an example of implementing stereographic projection and its derivative at =example/example.nb= and =example/example.cpp=.
+  
+   The notebook =example.nb= generates the mathematical expressions for stereographic projection turns them into a C++ code which is then inserted into =example.cpp= and final =main.cpp= is generated. This can then be compiled with =g++ main.cpp=.
