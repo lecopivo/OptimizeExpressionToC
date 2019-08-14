@@ -56,7 +56,7 @@ ExtractTags[string_String] :=
 TagExistQ[string_String, tag_String] := AnyTrue[ExtractTags[string], #[["tag"]]==tag &];
 
 ClearTagText[string_String, tag_String] :=
-	Module[{tags, startTag, endTag},
+	Module[{tags, startTag, endTag, x},
 	       tags = ExtractTags[string];
 	       startTag = FirstCase[tags, x_ /; x[["tag"]] == tag  && x[["tagType"]] == "<"];
 	       endTag = FirstCase[tags, x_ /; x[["tag"]] == tag  && x[["tagType"]] == "</"];
@@ -66,7 +66,7 @@ ClearTagText[string_String, tag_String] :=
 	]
 
 AppendToTag[string_String,  tag_String, linesToAppend_List] := 
-	Module[{tags, startTag, indent},
+	Module[{tags, startTag, indent, x},
 	       tags = ExtractTags[string];
 	       startTag = FirstCase[tags, x_ /; x[["tag"]] == tag  && x[["tagType"]] == "<"];
 	       indent = startTag[["indentation"]];
