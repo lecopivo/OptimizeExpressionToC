@@ -6,7 +6,7 @@ OptimizeExpressionToC::usage = "Generates optimized version of expression in C";
 
 Begin[ "Private`"]
 
-OptimizeExpressionToC[expr_] :=
+OptimizeExpressionToC[expr_List] :=
 	Module[ {optimizedExpr, mainExpr, n, m, defs, output},
 		optimizedExpr = Experimental`OptimizeExpression[expr];
 		If[ ToString@optimizedExpr[[1, 0]] == "Block",

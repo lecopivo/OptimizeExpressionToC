@@ -3,8 +3,36 @@
   This is a [[https://www.wolfram.com/mathematica/][Mathematica]] function which takes an expression and spits out an
   optimized C code to evaluate this expression.
 
+
+  The basic idea that Mathematica expression like
+  #+BEGIN_SRC C
+  x*x / (1 + x*x)
+  #+END_SRC
+  is turned into C code
+  #+BEGIN_SRC C
+  double tmp = x*x;
+  return out = tmp / (1 + tmp);
+  #+END_SRC
+  Therefore the value =x*x= is computed only once and reused to compute the final value.
+
+
+  A more complicated example: the fourth derivative of =Sin[Cos[x]]= is:
+  #+BEGIN_SRC C
+    Cos[x] Cos[Cos[x]] + 6 Cos[x] Cos[Cos[x]] Sin[x]^2 - 3 Cos[x]^2 Sin[Cos[x]] + 4 Sin[x]^2 Sin[Cos[x]] + Sin[x]^4 Sin[Cos[x]]
+  #+END_SRC
+  Calling =OptimizeExpressionToC[{D[Sin[Cos[x]], {x,4}]}]= produces:
+  #+BEGIN_SRC C
+    double tmp2 = Cos(x);
+    double tmp3 = Cos(tmp2);
+    double tmp6 = Sin(x);
+    double tmp7 = Power(tmp6,2);
+    double tmp11 = Sin(tmp2);
+    return -3*tmp11*Power(tmp2,2) + tmp2*tmp3 + tmp11*Power(tmp6,4) + 4*tmp11*tmp7 + 6*tmp2*tmp3*tmp7;
+  #+END_SRC
+  The exact output is a little bit different, run the command yourself to see the exact result and have a look at =example/example.nb= how can be the result used.
+
 * Examples
 
-   You can find an example of implementing stereographic projection and its derivative at =example/example.nb= and =example/example.cpp=.
+  You can find an example of implementing stereographic projection and its derivative at =example/example.nb= and =example/example.cpp=.
   
-   The notebook =example.nb= generates the mathematical expressions for stereographic projection turns them into a C++ code which is then inserted into =example.cpp= and final =main.cpp= is generated. This can then be compiled with =g++ main.cpp=.
+  The notebook =example.nb= generates the mathematical expressions for stereographic projection turns them into a C++ code which is then inserted into =example.cpp= and final =main.cpp= is generated. This can then be compiled with =g++ main.cpp=.
