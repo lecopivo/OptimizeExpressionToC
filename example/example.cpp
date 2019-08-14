@@ -76,5 +76,4 @@ int main() {
   print(stereographic_projection_grad(v));
 
   return 0;
-
 }
