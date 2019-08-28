@@ -4,6 +4,10 @@ BeginPackage[ "OptimizeExpressionToC`"]
 
 OptimizeExpressionToC::usage = "Generates optimized version of expression in C";
 
+ExtractTags::usage = "";
+TagExistsQ::usage = "";
+AppnedToTag::usage = "";
+
 Begin[ "Private`"]
 
 OptimizeExpressionToC[expr_List] :=
