@@ -5,8 +5,9 @@ BeginPackage[ "OptimizeExpressionToC`"]
 OptimizeExpressionToC::usage = "Generates optimized version of expression in C";
 
 ExtractTags::usage = "";
-TagExistsQ::usage = "";
-AppnedToTag::usage = "";
+ClearTagText::usage = "";
+TagExistQ::usage = "";
+AppendToTag::usage = "";
 
 Begin[ "Private`"]
 
